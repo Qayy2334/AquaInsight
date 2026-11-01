@@ -43,12 +43,6 @@ const INSIGHTS = [
   },
 ]
 
-const SDGS = [
-  ['SDG 6', 'Clean Water and Sanitation'],
-  ['SDG 3', 'Good Health and Well-being'],
-  ['SDG 9', 'Industry, Innovation and Infrastructure'],
-]
-
 /** Adds .is-visible to .lp-reveal children of the returned ref once they scroll into view. */
 function useReveal<T extends HTMLElement>() {
   const ref = useRef<T>(null)
@@ -246,17 +240,6 @@ function Hero() {
               <a href="#how-it-works" className="inline-flex h-14 items-center rounded-[2px] border border-grey-100 px-7 text-sm font-medium uppercase tracking-[-0.01em] text-ink transition hover:bg-grey-25">
                 See how it works
               </a>
-            </div>
-          </div>
-
-          <div className="lp-enter border-t border-[#000e23]/10 px-6 pb-6 pt-5" style={delay(1200)}>
-            <p className="text-center text-[13px] font-medium uppercase tracking-[-0.01em] text-[#4a4a4a]">Built around the UN Sustainable Development Goals</p>
-            <div className="mx-auto mt-4 flex max-w-[680px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
-              {SDGS.map(([code, name]) => (
-                <span key={code} className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-[#9aa1ad]">
-                  <span className="text-[#4a4a4a]">{code}</span> {name}
-                </span>
-              ))}
             </div>
           </div>
         </section>
