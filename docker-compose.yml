@@ -1,0 +1,47 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-water_quality}
+      MYSQL_USER: ${MYSQL_USER:-water}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-water}
+      TZ: Asia/Kuala_Lumpur
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-water}:${MYSQL_PASSWORD:-water}@mysql:3306/${MYSQL_DATABASE:-water_quality}?charset=utf8mb4
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+      MODEL_DIR: /app/artifacts
+    volumes:
+      - model_artifacts:/app/artifacts
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  model_artifacts:

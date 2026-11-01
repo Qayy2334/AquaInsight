@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Design tokens taken from the SmartyAir Figma UI kit (Dashboard - Light Mode). */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary-0: #f4f7ff;
+  --color-primary-100: #80a6ee;
+  --color-primary-200: #5589e8;
+  --color-primary-300: #2b6be2;
+
+  --color-grey-0: #f8fafb;
+  --color-grey-25: #f6f8fa;
+  --color-grey-50: #eceff3;
+  --color-grey-100: #dfe1e7;
+  --color-grey-500: #666d80;
+  --color-paragraph: #6f6f6f;
+  --color-ink: #0d0d12;
+
+  --color-success-0: #effefa;
+  --color-success-100: #40c4aa;
+  --color-success-200: #28806f;
+  --color-warning-0: #fff6e0;
+  --color-warning-100: #ffbe4c;
+  --color-warning-200: #966422;
+  --color-error-0: #fff0f3;
+  --color-error-100: #df1c41;
+
+  --shadow-xl: 0 8px 8px -4px #10182808, 0 20px 24px -4px #10182814;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-grey-25 text-ink font-sans antialiased;
+}
