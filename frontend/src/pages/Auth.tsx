@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Droplets, Eye, EyeOff, LineChart, ShieldCheck, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, Droplets, Eye, EyeOff, LineChart, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { api, session, type User } from '../api/client'
@@ -37,7 +37,13 @@ function AuthLayout({ children }: { children: ReactNode }) {
         <div className="pointer-events-none absolute -bottom-24 -right-24 size-80 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -right-10 top-24 size-40 rounded-full bg-white/5" />
       </aside>
-      <main className="flex flex-1 items-center justify-center px-6">
+      <main className="relative flex flex-1 items-center justify-center px-6 py-20">
+        <Link
+          to="/"
+          className="absolute left-4 top-2 inline-flex h-10 items-center gap-2 rounded-xl border border-grey-50 bg-white px-3.5 text-sm font-medium text-ink transition hover:bg-grey-25 lg:left-8 lg:top-6"
+        >
+          <ArrowLeft className="size-4" /> Back to home
+        </Link>
         <div className="w-full max-w-[350px]">
           <Link to="/" className="mb-8 flex items-center gap-2 lg:hidden">
             <Droplets className="size-6 text-primary-300" />
