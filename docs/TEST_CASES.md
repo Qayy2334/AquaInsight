@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **26 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **25 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -39,7 +39,6 @@ Tests use an isolated SQLite database and the real seed file. Last run: **26 pas
 | | test_exports | 4 CSV exports return the expected rows |
 | | test_upload_rejects_bad_files | Wrong extension → 400; no date column → 422 |
 | | test_upload_new_dataset_becomes_active_and_delete | Upload becomes active; delete restores previous dataset |
-| | test_dashboard_summary | Summary: 61 rows, top correlation > 0.95, free chlorine within reference 56/61, turbidity −31%, anomaly counts |
 | | test_dashboard_day_view | Day view for 09-16 (low dosage, both flags, prev/next, ±3 days), test-period day has predictions, unknown date → 404, first day has no prev |
 | | test_duplicate_dates_warned_on_upload | Duplicate date in upload is listed in the report and returned as a warning |
 

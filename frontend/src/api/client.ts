@@ -136,22 +136,6 @@ export interface AnomalyList {
   iqr_bounds: Record<VariableKey, [number, number]>
 }
 
-export interface DashboardSummary {
-  dataset: { id: number; name: string; source: string; rows: number; start_date: string; end_date: string }
-  quality: { completeness: number; missing_days: number; corrections: number; duplicates: number }
-  treatment: Record<'turbidity' | 'ph', { influent_mean: number; outlet_mean: number; change_pct: number; days_outlet_above_influent: number }>
-  top_correlations: { a: VariableKey; b: VariableKey; r: number }[]
-  compliance: { variable: VariableKey; within: number; total: number; min?: number; max?: number; note: string }[]
-  predictability: { target: TargetKey; best_model: ModelType; best_cv_mae: number; mean_cv_mae: number; beats_mean: boolean }[]
-  anomalies: {
-    iqr: number
-    iforest: number
-    both: number
-    flagged_dates: string[]
-    both_details: ({ date: string } & Partial<Record<Method, { score: number; contributors: Contributor[] }>>)[]
-  }
-}
-
 export interface DayVariable {
   value: number | null
   median: number
@@ -194,7 +178,6 @@ export const fetchers = {
   nextDay: () => get<NextDay>('/models/next-day'),
   anomalies: () => get<AnomalyList>('/anomalies'),
   datasets: () => get<Dataset[]>('/datasets'),
-  summary: () => get<DashboardSummary>('/dashboard/summary'),
   day: (date: string) => get<DayView>('/dashboard/day', { date }),
 }
 

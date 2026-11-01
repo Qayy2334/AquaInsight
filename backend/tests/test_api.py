@@ -83,16 +83,6 @@ def test_value_on_iqr_bound_not_flagged_for_that_variable(client):
     assert [c["variable"] for c in item["details"]["iqr"]["contributors"]] == ["outlet_free_chlorine"]
 
 
-def test_dashboard_summary(client):
-    s = client.get("/api/dashboard/summary").json()
-    assert s["dataset"]["rows"] == 61
-    assert s["top_correlations"][0]["r"] > 0.95
-    assert {c["variable"]: c["within"] for c in s["compliance"]}["outlet_free_chlorine"] == 56
-    assert round(s["treatment"]["turbidity"]["change_pct"]) == -31
-    assert len(s["predictability"]) == 3
-    assert s["anomalies"]["both"] == 3 and s["anomalies"]["iqr"] == 13
-
-
 def test_dashboard_day_view(client):
     d = client.get("/api/dashboard/day", params={"date": "2026-09-16"}).json()
     assert d["variables"]["naocl_dosage"]["value"] == 1.0 and d["variables"]["naocl_dosage"]["status"] == "low"
