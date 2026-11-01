@@ -129,16 +129,47 @@ def train_all(db: Session, dataset_id: int, df: pd.DataFrame) -> list[ModelRun]:
 
 
 def predict_next_day(db: Session, dataset_id: int, df: pd.DataFrame) -> dict:
-    """Apply the trained models to the last record (illustrates model output; not an operational forecast)."""
+    """Forecast the day after the last record for each outlet target.
+
+    The recommended model per target is the ML model (LR or RF) with the lower cross-validated MAE.
+    Reliability is "usable" only if that model beats the historical-mean reference on CV MAE.
+    """
     data = prepare_for_analysis(df)
     last = data.iloc[[-1]]
     base_date = last["date"].iloc[0]
-    result = {"based_on": base_date.date().isoformat(), "for_date": (base_date + timedelta(days=1)).date().isoformat(), "predictions": {}}
     runs = db.scalars(select(ModelRun).where(ModelRun.dataset_id == dataset_id)).all()
-    for run in runs:
-        if not run.artifact_path or not os.path.exists(run.artifact_path):
+
+    forecasts = {}
+    for target in TARGETS:
+        by_type = {r.model_type: r for r in runs if r.target == target}
+        models = {}
+        for mt in MODEL_TYPES:
+            run = by_type.get(mt)
+            if not run or not run.artifact_path or not os.path.exists(run.artifact_path):
+                continue
+            model = joblib.load(run.artifact_path)
+            models[mt] = {
+                "value": float(model.predict(last[VARIABLE_KEYS])[0]),
+                "test_mae": run.mae,
+                "cv_mae": (run.cv or {}).get("mae_mean"),
+            }
+        if not models:
             continue
-        model = joblib.load(run.artifact_path)
-        value = float(model.predict(last[VARIABLE_KEYS])[0])
-        result["predictions"].setdefault(run.target, {})[run.model_type] = {"value": value, "mae": run.mae}
-    return result
+        rec = min(models, key=lambda mt: models[mt]["cv_mae"] if models[mt]["cv_mae"] is not None else float("inf"))
+        mean_run = by_type.get("historical_mean")
+        mean_cv = (mean_run.cv or {}).get("mae_mean") if mean_run else None
+        rec_cv = models[rec]["cv_mae"]
+        forecasts[target] = {
+            "recommended_model": rec,
+            "value": models[rec]["value"],
+            "error": rec_cv,  # typical absolute error (CV MAE) used as the ± range
+            "current": float(last[target].iloc[0]),
+            "reliability": "usable" if rec_cv is not None and mean_cv is not None and rec_cv < mean_cv else "limited",
+            "mean_cv_mae": mean_cv,
+            "models": models,
+        }
+    return {
+        "based_on": base_date.date().isoformat(),
+        "for_date": (base_date + timedelta(days=1)).date().isoformat(),
+        "forecasts": forecasts,
+    }

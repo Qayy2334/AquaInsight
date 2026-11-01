@@ -104,3 +104,17 @@ def test_duplicate_dates_warned_on_upload(client):
     assert up["quality_report"]["duplicate_dates"] == ["2026-11-05"]
     assert any("2026-11-05" in w for w in up["warnings"])
     client.delete(f"/api/datasets/{up['id']}")
+
+
+def test_next_day_forecast(client):
+    f = client.get("/api/models/next-day").json()
+    assert f["based_on"] == "2026-09-30" and f["for_date"] == "2026-10-01"
+    assert set(f["forecasts"]) == {"outlet_turbidity", "outlet_ph", "outlet_free_chlorine"}
+    for t, fc in f["forecasts"].items():
+        assert fc["recommended_model"] in ("linear_regression", "random_forest")
+        rec = fc["models"][fc["recommended_model"]]
+        assert fc["value"] == rec["value"] and fc["error"] == rec["cv_mae"]
+        assert all(rec["cv_mae"] <= m["cv_mae"] for m in fc["models"].values())
+        # On this dataset no model beats the historical mean, so every forecast is marked limited.
+        assert fc["reliability"] == "limited"
+    assert f["forecasts"]["outlet_free_chlorine"]["current"] == 0.35

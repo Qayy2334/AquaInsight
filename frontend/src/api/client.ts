@@ -118,10 +118,20 @@ export interface PredictionRows {
   runs: ModelRun[]
 }
 
+export interface Forecast {
+  recommended_model: ModelType
+  value: number
+  error: number | null
+  current: number
+  reliability: 'usable' | 'limited'
+  mean_cv_mae: number | null
+  models: Partial<Record<ModelType, { value: number; test_mae: number; cv_mae: number | null }>>
+}
+
 export interface NextDay {
   based_on: string
   for_date: string
-  predictions: Partial<Record<TargetKey, Partial<Record<ModelType, { value: number; mae: number }>>>>
+  forecasts: Partial<Record<TargetKey, Forecast>>
 }
 
 export interface AnomalyItem {
