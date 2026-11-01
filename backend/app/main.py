@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from .config import settings
 from .db import Base, SessionLocal, engine, wait_for_db
 from .models import Dataset
-from .routers import analysis, anomalies, datasets, exports, predictions
+from .routers import analysis, anomalies, dashboard, datasets, exports, predictions
 from .services import anomaly, ml
 from .services.demo import generate_demo_data
 from .services.preprocess import build_quality_report, clean, read_upload
@@ -53,7 +53,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (datasets.router, analysis.router, predictions.router, anomalies.router, exports.router):
+for r in (datasets.router, analysis.router, predictions.router, anomalies.router, exports.router, dashboard.router):
     app.include_router(r)
 
 

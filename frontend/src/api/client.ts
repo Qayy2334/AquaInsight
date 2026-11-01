@@ -136,6 +136,30 @@ export interface AnomalyList {
   iqr_bounds: Record<VariableKey, [number, number]>
 }
 
+export interface DayVariable {
+  value: number | null
+  median: number
+  min: number
+  max: number
+  q1: number
+  q3: number
+  lower: number
+  upper: number
+  percentile: number | null
+  status: 'low' | 'normal' | 'high' | null
+}
+
+export interface DayView {
+  date: string
+  prev_date: string | null
+  next_date: string | null
+  iqr_k: number
+  variables: Record<VariableKey, DayVariable>
+  anomaly: Partial<Record<Method, { score: number; contributors: Contributor[] }>> | null
+  predictions: Partial<Record<TargetKey, { actual: number } & Partial<Record<AnyModel, number>>>>
+  neighbours: WaterRecord[]
+}
+
 const get = <T,>(url: string, params?: object) => api.get<T>(url, { params }).then((r) => r.data)
 
 export const fetchers = {
@@ -154,6 +178,7 @@ export const fetchers = {
   nextDay: () => get<NextDay>('/models/next-day'),
   anomalies: () => get<AnomalyList>('/anomalies'),
   datasets: () => get<Dataset[]>('/datasets'),
+  day: (date: string) => get<DayView>('/dashboard/day', { date }),
 }
 
 export const EXPORTS = {

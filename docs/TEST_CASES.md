@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **23 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **25 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -39,6 +39,8 @@ Tests use an isolated SQLite database and the real seed file. Last run: **23 pas
 | | test_exports | 4 CSV exports return the expected rows |
 | | test_upload_rejects_bad_files | Wrong extension → 400; no date column → 422 |
 | | test_upload_new_dataset_becomes_active_and_delete | Upload becomes active; delete restores previous dataset |
+| | test_dashboard_day_view | Day view for 09-16 (low dosage, both flags, prev/next, ±3 days), test-period day has predictions, unknown date → 404, first day has no prev |
+| | test_duplicate_dates_warned_on_upload | Duplicate date in upload is listed in the report and returned as a warning |
 
 ## 2. Functional UI test cases
 
@@ -48,9 +50,13 @@ and fill in the result.
 
 | ID | Page | Steps | Expected result | Result |
 |---|---|---|---|---|
-| UI-01 | Dashboard | Open `/` | KPI cards show last record 2026-09-30: outlet turbidity 0.14, pH 7.59, free chlorine 0.35; header shows dataset period and 61 records | Pass |
-| UI-02 | Dashboard | Change gauge to each target | Gauge value and reference note update; badge shows within/outside reference | To run |
-| UI-03 | Dashboard | Inspect "Model Output on Last Record" | LR and RF values for 2026-10-01 shown with MAE and the historical-analysis disclaimer | Pass |
+| UI-01 | Dashboard | Open `/` | Single-day view of the last record 2026-09-30 (not today's date); "No flags"; Next disabled; Day 61 of 61 | Pass |
+| UI-02 | Dashboard | Click the date button, pick 19 Aug in the calendar popover | Popover closes, URL becomes `?date=2026-08-19`, status "Flagged by both methods" | Pass |
+| UI-03 | Dashboard | Open `/?date=2026-09-16` | KPI cards: free chlorine 0.05 and dosage 1.00 marked Low with change vs previous day; gauge pointer in the amber (low) zone; Alert Information lists IQR and Isolation Forest reasons | Pass |
+| UI-03b | Dashboard | Change gauge indicator | Dial range, normal band, value and badge update for the selected variable | To run |
+| UI-03c | Dashboard | Open a test-period date (e.g. 2026-09-27), scroll to Model Check | Actual vs LR, RF and historical mean with errors | Pass |
+| UI-03d | Dashboard | Click Prev / Next | Moves to the adjacent record date | To run |
+| UI-03e | Anomaly Detection | Click "Day" on a flagged row | Opens the Dashboard for that date | Pass |
 | UI-04 | Historical Trends | Select variable, switch 1W/2W/1M/All | Line chart and 7-day average update to the selected range | Pass (All) / To run (others) |
 | UI-05 | Historical Trends | Switch Influent vs Outlet between Turbidity and pH | Weekly bars for the selected pair | Pass |
 | UI-06 | Historical Trends | Toggle Distribution: Histogram / Box plot | Box plot shows quartiles; IQR outliers drawn as points | Pass |
