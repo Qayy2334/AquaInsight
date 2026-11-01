@@ -51,13 +51,13 @@ and fill in the result.
 
 | ID | Page | Steps | Expected result | Result |
 |---|---|---|---|---|
-| UI-01 | Dashboard | Open `/` | Summary cards: 61 records, 100% quality, predictability 0/3, 3 records to review; findings: turbidity −31.2%, dosage × chlorine r = 0.98, free chlorine within reference 56/61 | Pass |
-| UI-02 | Dashboard | Open `/` without a date | Daily review defaults to the last record (2026-09-30), not today's date | Pass |
-| UI-03 | Dashboard | Open `/?date=2026-09-16` | Calendar highlights 16 Sep; dosage 1.00 and free chlorine 0.05 marked Low; IQR and Isolation Forest reasons shown; ±3-day chart with IQR bounds | Pass |
-| UI-03b | Dashboard | Open `/?date=2026-09-27` (test period) | "Model check for this day" table shows actual vs LR, RF and historical mean | Pass |
-| UI-03c | Dashboard | Click Next / Prev | Moves to the adjacent record date and updates the URL | Pass (Next) |
-| UI-03d | Dashboard | Click a flagged date in the calendar | Day view switches to that date | To run |
-| UI-03e | Anomaly Detection | Click "Day" on a flagged row | Opens Dashboard daily review for that date | Pass |
+| UI-01 | Dashboard | Open `/` | Single-day view of the last record 2026-09-30 (not today's date); "No flags"; Next disabled; Day 61 of 61 | Pass |
+| UI-02 | Dashboard | Click the date button, pick 19 Aug in the calendar popover | Popover closes, URL becomes `?date=2026-08-19`, status "Flagged by both methods" | Pass |
+| UI-03 | Dashboard | Open `/?date=2026-09-16` | KPI cards: free chlorine 0.05 and dosage 1.00 marked Low with change vs previous day; gauge pointer in the amber (low) zone; Alert Information lists IQR and Isolation Forest reasons | Pass |
+| UI-03b | Dashboard | Change gauge indicator | Dial range, normal band, value and badge update for the selected variable | To run |
+| UI-03c | Dashboard | Open a test-period date (e.g. 2026-09-27), scroll to Model Check | Actual vs LR, RF and historical mean with errors | Pass |
+| UI-03d | Dashboard | Click Prev / Next | Moves to the adjacent record date | To run |
+| UI-03e | Anomaly Detection | Click "Day" on a flagged row | Opens the Dashboard for that date | Pass |
 | UI-04 | Historical Trends | Select variable, switch 1W/2W/1M/All | Line chart and 7-day average update to the selected range | Pass (All) / To run (others) |
 | UI-05 | Historical Trends | Switch Influent vs Outlet between Turbidity and pH | Weekly bars for the selected pair | Pass |
 | UI-06 | Historical Trends | Toggle Distribution: Histogram / Box plot | Box plot shows quartiles; IQR outliers drawn as points | Pass |

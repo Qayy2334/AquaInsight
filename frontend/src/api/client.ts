@@ -155,6 +155,8 @@ export interface DashboardSummary {
 export interface DayVariable {
   value: number | null
   median: number
+  min: number
+  max: number
   q1: number
   q3: number
   lower: number

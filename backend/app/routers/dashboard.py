@@ -124,6 +124,8 @@ def day(date: date, ds: Dataset = Depends(current_dataset), db: Session = Depend
         variables[key] = {
             "value": value,
             "median": float(s.median()),
+            "min": float(s.min()),
+            "max": float(s.max()),
             "q1": float(s.quantile(0.25)),
             "q3": float(s.quantile(0.75)),
             "lower": lo,
