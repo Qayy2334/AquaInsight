@@ -28,7 +28,7 @@ export interface Meta {
   reference_ranges: Partial<Record<VariableKey, { min?: number; max?: number; note: string }>>
 }
 
-export type WaterRecord = { date: string } & Record<VariableKey, number | null>
+export type WaterRecord = { date: string; source?: string; updated_at?: string | null } & Record<VariableKey, number | null>
 
 export interface QualityReport {
   rows: number
@@ -40,6 +40,7 @@ export interface QualityReport {
   rows_in?: number
   invalid_dates_dropped?: number
   duplicate_dates_dropped?: number
+  duplicate_dates?: string[]
   non_numeric_values?: Record<VariableKey, number>
   corrections?: { date: string; variable: VariableKey; raw: string; value: number }[]
   column_mapping?: Record<string, string>
@@ -47,14 +48,47 @@ export interface QualityReport {
   missing_columns?: string[]
 }
 
-export interface Dataset {
-  id: number
+export interface StoreSummary {
   name: string
-  source: 'upload' | 'demo'
-  row_count: number
+  rows: number
+  quality: QualityReport | null
+}
+
+export type DayValues = Record<VariableKey, number | null>
+
+export interface UploadPreview {
+  filename: string
+  file_report: QualityReport
+  new: { date: string; values: DayValues }[]
+  conflicts: { date: string; old: DayValues; new: DayValues; changed: VariableKey[] }[]
+  identical: string[]
+}
+
+export interface UploadResult {
+  id: number
+  filename: string
+  added: number
+  updated: number
+  skipped: number
+  file_report: QualityReport
+  warnings: string[]
+}
+
+export interface UploadLog {
+  id: number
+  filename: string
+  added: number
+  updated: number
+  skipped: number
   created_at: string | null
-  quality_report: QualityReport | null
-  warnings?: string[]
+}
+
+export interface RecordChange {
+  action: 'create' | 'update' | 'delete'
+  source: string
+  old: DayValues | null
+  new: DayValues | null
+  at: string | null
 }
 
 export interface Contributor {
@@ -68,7 +102,7 @@ export interface Contributor {
 }
 
 export interface Overview {
-  dataset: Pick<Dataset, 'id' | 'name' | 'source' | 'row_count'>
+  dataset: { id: number; name: string; source: string; row_count: number }
   latest_date: string
   kpis: Record<VariableKey, { latest: number | null; avg_7d: number | null; avg_all: number }>
   quality: QualityReport
@@ -187,7 +221,9 @@ export const fetchers = {
   predictions: (target: TargetKey) => get<PredictionRows>('/models/predictions', { target }),
   nextDay: () => get<NextDay>('/models/next-day'),
   anomalies: () => get<AnomalyList>('/anomalies'),
-  datasets: () => get<Dataset[]>('/datasets'),
+  storeSummary: () => get<StoreSummary>('/records/summary'),
+  uploads: () => get<UploadLog[]>('/uploads'),
+  history: (date: string) => get<RecordChange[]>(`/records/${date}/history`),
   day: (date: string) => get<DayView>('/dashboard/day', { date }),
 }
 

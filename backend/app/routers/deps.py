@@ -1,13 +1,14 @@
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models import Dataset
-from ..services.repository import active_dataset
+from ..services.repository import get_store
 
 
-def current_dataset(dataset_id: int | None = Query(None), db: Session = Depends(get_db)) -> Dataset:
-    ds = active_dataset(db, dataset_id)
-    if ds is None:
-        raise HTTPException(404, "No dataset loaded. Upload an Excel file first.")
-    return ds
+def current_dataset(db: Session = Depends(get_db)) -> Dataset:
+    """The record store, for analysis endpoints that need at least one record."""
+    store = get_store(db)
+    if not store.row_count:
+        raise HTTPException(404, "No records yet. Upload a file or add a day in Data Management.")
+    return store

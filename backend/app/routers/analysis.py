@@ -1,4 +1,3 @@
-from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
@@ -23,18 +22,6 @@ def _check_var(name: str) -> str:
 @router.get("/meta")
 def meta():
     return {"variables": VARIABLES, "targets": TARGETS, "reference_ranges": REFERENCE_RANGES}
-
-
-@router.get("/records")
-def records(start: date | None = None, end: date | None = None,
-            ds: Dataset = Depends(current_dataset), db: Session = Depends(get_db)):
-    df = load_frame(db, ds.id)
-    if start:
-        df = df[df["date"] >= str(start)]
-    if end:
-        df = df[df["date"] <= str(end)]
-    df = df.astype(object).where(df.notna(), None)
-    return [{"date": r["date"].date().isoformat(), **{k: r[k] for k in VARIABLE_KEYS}} for r in df.to_dict("records")]
 
 
 @router.get("/overview")
