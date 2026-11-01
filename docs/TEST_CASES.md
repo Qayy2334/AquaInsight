@@ -63,7 +63,8 @@ and fill in the result.
 | UI-06 | Historical Trends | Toggle Distribution: Histogram / Box plot | Box plot shows quartiles; IQR outliers drawn as points | Pass |
 | UI-07 | Historical Trends | Switch correlation Pearson / Spearman | Heatmap values change; dosage × free chlorine ≈ 0.98 (Pearson) | Pass (Pearson) |
 | UI-08 | Historical Trends | Change scatter X/Y | Points and trend line update | To run |
-| UI-09 | Next-day Prediction | Open page; switch target in the accuracy section | Top: forecast cards for 2026-10-01 (recommended model, value ± typical error, change vs last record, normal-range check, "Limited accuracy"); below: actual vs predicted for the test period with error summary and conclusion updating per target | Pass |
+| UI-09 | Next-day Prediction | Open page | Only forecast content: cards for 2026-10-01 (recommended model, value ± typical error, change vs last record, normal-range check, "Limited accuracy"), limited-accuracy notice with link to Model Testing, and the six input measurements of 2026-09-30 | Pass |
+| UI-09b | Model Testing | Open page; switch target; toggle series | Conclusion (model used, CV error vs historical average), LR/RF test MAE/RMSE cards, actual vs predicted, predicted-vs-actual scatter, residuals and test log update per target | Pass (open) / To run (switch, toggle) |
 | UI-10 | Anomaly Detection | Open page | Counts IQR 13, Isolation Forest 3, both 3; subtitle shows k = 1.5, contamination = 0.05 | Pass |
 | UI-11 | Anomaly Detection | Set k = 2.0, click Re-run detection | Counts change; timeline bounds and subtitle reflect k = 2.0 | To run (API covered by test) |
 | UI-12 | Anomaly Detection | Filter "Both", click View on 2026-09-16 | Modal shows dosage 1.0 and free chlorine 0.05 with bounds (IQR) and z-scores (IF) | To run |

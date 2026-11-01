@@ -7,6 +7,7 @@ import './index.css'
 import Anomalies from './pages/Anomalies'
 import DataManagement from './pages/DataManagement'
 import Evaluation from './pages/Evaluation'
+import ModelTesting from './pages/ModelTesting'
 import Overview from './pages/Overview'
 import Prediction from './pages/Prediction'
 import Trends from './pages/Trends'
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
             <Route index element={<Overview />} />
             <Route path="trends" element={<Trends />} />
             <Route path="prediction" element={<Prediction />} />
+            <Route path="testing" element={<ModelTesting />} />
             <Route path="anomalies" element={<Anomalies />} />
             <Route path="evaluation" element={<Evaluation />} />
             <Route path="data" element={<DataManagement />} />
