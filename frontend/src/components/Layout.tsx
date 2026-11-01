@@ -5,6 +5,7 @@ import {
   Database,
   Droplets,
   FileBarChart,
+  FlaskConical,
   LayoutDashboard,
   LineChart,
   PanelLeft,
@@ -27,6 +28,7 @@ const NAV = [
     section: 'Analysis',
     items: [
       { to: '/prediction', label: 'Next-day Prediction', icon: BrainCircuit },
+      { to: '/testing', label: 'Model Testing', icon: FlaskConical },
       { to: '/anomalies', label: 'Anomaly Detection', icon: TriangleAlert },
     ],
   },

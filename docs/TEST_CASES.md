@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **25 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **26 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -41,6 +41,7 @@ Tests use an isolated SQLite database and the real seed file. Last run: **25 pas
 | | test_upload_new_dataset_becomes_active_and_delete | Upload becomes active; delete restores previous dataset |
 | | test_dashboard_day_view | Day view for 09-16 (low dosage, both flags, prev/next, ±3 days), test-period day has predictions, unknown date → 404, first day has no prev |
 | | test_duplicate_dates_warned_on_upload | Duplicate date in upload is listed in the report and returned as a warning |
+| | test_next_day_forecast | Forecast for 2026-10-01 from 2026-09-30: recommended model has the lowest CV MAE, ± range = CV MAE, all marked "limited" on this dataset |
 
 ## 2. Functional UI test cases
 
@@ -62,7 +63,8 @@ and fill in the result.
 | UI-06 | Historical Trends | Toggle Distribution: Histogram / Box plot | Box plot shows quartiles; IQR outliers drawn as points | Pass |
 | UI-07 | Historical Trends | Switch correlation Pearson / Spearman | Heatmap values change; dosage × free chlorine ≈ 0.98 (Pearson) | Pass (Pearson) |
 | UI-08 | Historical Trends | Change scatter X/Y | Points and trend line update | To run |
-| UI-09 | Next-day Prediction | Switch target; toggle series incl. references | Metric cards, line chart, scatter, residuals update; small-test-set warning shown | Pass |
+| UI-09 | Next-day Prediction | Open page | Only forecast content: cards for 2026-10-01 (recommended model, value ± typical error, change vs last record, normal-range check, "Limited accuracy"), limited-accuracy notice with link to Model Testing, and the six input measurements of 2026-09-30 | Pass |
+| UI-09b | Model Testing | Open page; switch target; toggle series | Conclusion (model used, CV error vs historical average), LR/RF test MAE/RMSE cards, actual vs predicted, predicted-vs-actual scatter, residuals and test log update per target | Pass (open) / To run (switch, toggle) |
 | UI-10 | Anomaly Detection | Open page | Counts IQR 13, Isolation Forest 3, both 3; subtitle shows k = 1.5, contamination = 0.05 | Pass |
 | UI-11 | Anomaly Detection | Set k = 2.0, click Re-run detection | Counts change; timeline bounds and subtitle reflect k = 2.0 | To run (API covered by test) |
 | UI-12 | Anomaly Detection | Filter "Both", click View on 2026-09-16 | Modal shows dosage 1.0 and free chlorine 0.05 with bounds (IQR) and z-scores (IF) | To run |
