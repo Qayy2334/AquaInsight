@@ -2,7 +2,7 @@
 
 ## 你需要准备
 
-- Windows 10（21H2 及以上）或 Windows 11，64 位
+- Windows 10 64 位（22H2 及以上）或 Windows 11
 - 已安装 **Docker Desktop**：<https://www.docker.com/products/docker-desktop/>
   安装时保持默认的 **WSL 2** 选项。装好后打开 Docker Desktop，等左下角显示 **Engine running**。
 - 空闲端口：8080（网页）、8000（接口）、3307（数据库）
