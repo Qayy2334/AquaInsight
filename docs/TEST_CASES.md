@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **26 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **29 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -28,8 +28,8 @@ Tests use an isolated SQLite database and the real seed file. Last run: **26 pas
 | | test_gaps_do_not_create_pairs | A missing day does not create a false t → t+1 pair |
 | | test_persistence_and_mean_references | Reference predictions are computed correctly |
 | | test_time_series_cv_is_expanding_and_ordered | CV folds are chronological with growing training sets |
-| test_api.py | test_seeded_with_real_dataset | Empty DB is seeded with the 61-day real dataset |
-| | test_records_match_source | API returns source values |
+| test_api.py | test_seeded_from_plant_log | Empty DB is seeded with the 61-day plant log; import logged |
+| | test_records_match_source_and_carry_origin | API returns source values and each day's origin |
 | | test_chronological_split_without_overlap | 48/12 split; test period 09-19 – 09-30 |
 | | test_all_models_and_references_trained | 3 targets × 4 models |
 | | test_anomaly_rerun_persists_parameters_and_bounds | Re-run with k = 2.0 stores and returns the parameters and bounds used |
@@ -37,11 +37,14 @@ Tests use an isolated SQLite database and the real seed file. Last run: **26 pas
 | | test_value_on_iqr_bound_not_flagged_for_that_variable | Value equal to a bound is not flagged (float tolerance) |
 | | test_eda_endpoints | Correlation (dosage–chlorine > 0.95), histogram, invalid variable → 400 |
 | | test_exports | 4 CSV exports return the expected rows |
+| | test_dashboard_day_view | Day view for 09-16, test-period day has predictions, unknown date → 404, first day has no prev |
+| | test_next_day_forecast | Forecast for 2026-10-01: recommended model has the lowest CV MAE, ± = CV MAE, all "limited" |
 | | test_upload_rejects_bad_files | Wrong extension → 400; no date column → 422 |
-| | test_upload_new_dataset_becomes_active_and_delete | Upload becomes active; delete restores previous dataset |
-| | test_dashboard_day_view | Day view for 09-16 (low dosage, both flags, prev/next, ±3 days), test-period day has predictions, unknown date → 404, first day has no prev |
-| | test_duplicate_dates_warned_on_upload | Duplicate date in upload is listed in the report and returned as a warning |
-| | test_next_day_forecast | Forecast for 2026-10-01 from 2026-09-30: recommended model has the lowest CV MAE, ± range = CV MAE, all marked "limited" on this dataset |
+| | test_preview_of_same_file_changes_nothing | Re-uploading the plant log: 0 new, 0 conflicts, 61 identical; nothing written |
+| | test_preview_reports_duplicate_dates_in_file | Repeated date inside a file is reported |
+| | test_merge_upload_new_day_and_conflict | New day added; conflicting day kept unless ticked, then replaced and logged; analysis re-runs; restored |
+| | test_manual_add_edit_delete_with_history | Add (409 on duplicate), edit, delete (404 on missing), history newest first |
+| | test_commit_warns_about_duplicate_dates | Import returns a warning listing repeated dates |
 
 ## 2. Functional UI test cases
 
@@ -70,8 +73,11 @@ and fill in the result.
 | UI-12 | Anomaly Detection | Filter "Both", click View on 2026-09-16 | Modal shows dosage 1.0 and free chlorine 0.05 with bounds (IQR) and z-scores (IF) | To run |
 | UI-13 | Model Evaluation | Open page | Table lists 4 models per target with test and CV metrics; interpretation notice | Pass |
 | UI-14 | Model Evaluation | Click Export CSV | `model_evaluation.csv` downloads | To run (API covered by test) |
-| UI-15 | Data Management | Open page | Quality report: 61 rows, 100% completeness, correction note for 2026-08-07 | Pass |
-| UI-16 | Data Management | Drag the seed .docx into the upload box | Upload succeeds, new dataset becomes Active, pages refresh | To run (API covered by test) |
-| UI-17 | Data Management | Upload a .txt file | Error message shown, no dataset created | To run (API covered by test) |
+| UI-15 | Data Management | Open page | Summary (61 days, range, 0 missing, 100%), import box, import history (plant log +61), exports, full-width daily records table with source and actions | Pass |
+| UI-16 | Data Management | Choose a CSV with one new day and one changed day | Preview: 1 new, 1 different (old → new shown), 0 identical; import without ticking adds the new day and keeps the old value | Pass |
+| UI-16b | Data Management | Import again and tick the conflicting day | Day replaced; history shows the update | To run (API covered by test) |
+| UI-17 | Data Management | Delete a day | Day becomes a "No record for this day" row; missing count +1; analysis re-runs | Pass |
+| UI-17b | Data Management | Click "Add" on the missing row, fill values, save | Day restored as Manual; history shows delete then create | Pass |
+| UI-17c | Data Management | Edit a day | Value updated, source becomes Manual | Pass |
 | UI-18 | Data Management | Click each export button | 4 CSV files download and open in Excel with correct characters | To run |
 | UI-19 | Deployment | `docker compose down -v && docker compose up -d --build` on a clean machine | All three containers start; real dataset imported automatically | Pass |

@@ -24,10 +24,17 @@ docker compose up -d --build
 - API docs (Swagger): http://localhost:8000/docs
 - MySQL: `localhost:3307` (user `water` / `water`, db `water_quality`)
 
-On first start (empty database) the backend imports the real plant log
-`backend/seed_data/tumen_groundwater_2026-08_09.docx` (地下水厂 土门, 61 daily records, 2026-08-01 → 2026-09-30),
-then trains the models and runs anomaly detection. Newer records can be uploaded in **Data Management**
-(.xlsx / .xls / .csv / .docx); the newest dataset becomes active.
+Records are managed **by day**: the system keeps one continuous daily record set. On first start (empty
+database) it imports the plant log `backend/seed_data/tumen_groundwater_2026-08_09.docx` (地下水厂 土门, 61 days,
+2026-08-01 → 2026-09-30) and runs the analysis.
+
+In **Data Management** you can:
+- import a file (.xlsx / .xls / .csv / .docx): a preview shows new days, days whose values differ (tick to replace)
+  and identical days; only new or replaced days are written;
+- add, edit or delete a single day; missing days in the date range are listed and can be filled in;
+- see each day's source and change history, and the list of imported files.
+
+Every change re-runs model training and anomaly detection on all days (a few seconds).
 The synthetic generator (`SEED_DEMO_DATA=true`) is only used if the seed file is missing.
 
 Notes on the real data: NaOCl dosage is recorded in **mg/千吨水 (mg/kt)**; one value `7,58` (outlet pH, 2026-08-07)

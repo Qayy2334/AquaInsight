@@ -4,37 +4,34 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import func, select
 
 from .config import settings
 from .db import Base, SessionLocal, engine, wait_for_db
-from .models import Dataset
-from .routers import analysis, anomalies, dashboard, datasets, exports, predictions
-from .services import anomaly, ml
+from .routers import analysis, anomalies, dashboard, exports, predictions, records as records_router
+from .services import records
 from .services.demo import generate_demo_data
 from .services.preprocess import build_quality_report, clean, read_upload
-from .services.repository import save_dataset
+from .services.repository import get_store
 
 log = logging.getLogger("uvicorn")
 
 
 def seed_initial_data() -> None:
+    """Import the plant log (or demo data) when the record store is empty."""
     with SessionLocal() as db:
-        if db.scalar(select(func.count()).select_from(Dataset)):
+        store = get_store(db)
+        if store.row_count:
             return
         if os.path.exists(settings.seed_file):
-            log.info("No datasets found - importing %s", settings.seed_file)
+            log.info("No records found - importing %s", settings.seed_file)
             with open(settings.seed_file, "rb") as f:
                 df, report = clean(read_upload(settings.seed_file, f.read()))
-            ds = save_dataset(db, settings.seed_name, df, report, source="upload")
+            records.commit_upload(db, store, df, os.path.basename(settings.seed_file), report, set())
         elif settings.seed_demo_data:
-            log.info("No datasets found - seeding synthetic demo data")
+            log.info("No records found - seeding synthetic demo data")
             df = generate_demo_data()
-            ds = save_dataset(db, "Demo (synthetic) dataset", df, build_quality_report(df), source="demo")
-        else:
-            return
-        ml.train_all(db, ds.id, df)
-        anomaly.detect_all(db, ds.id, df)
+            store.source = "demo"
+            records.commit_upload(db, store, df, "synthetic demo data", build_quality_report(df), set())
 
 
 @asynccontextmanager
@@ -53,7 +50,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (datasets.router, analysis.router, predictions.router, anomalies.router, exports.router, dashboard.router):
+for r in (records_router.router, analysis.router, predictions.router, anomalies.router, exports.router, dashboard.router):
     app.include_router(r)
 
 

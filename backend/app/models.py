@@ -7,6 +7,8 @@ from .db import Base
 
 
 class Dataset(Base):
+    """The plant's record store. The app keeps a single store; daily records are merged into it."""
+
     __tablename__ = "datasets"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -32,8 +34,12 @@ class WaterRecord(Base):
     outlet_turbidity: Mapped[float | None] = mapped_column(Float, nullable=True)
     outlet_ph: Mapped[float | None] = mapped_column(Float, nullable=True)
     outlet_free_chlorine: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # Where the current values came from: the upload id, or None for manual entry.
+    upload_id: Mapped[int | None] = mapped_column(ForeignKey("uploads.id", ondelete="SET NULL"), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     dataset: Mapped[Dataset] = relationship(back_populates="records")
+    upload: Mapped["Upload | None"] = relationship()
 
 
 class ModelRun(Base):
@@ -93,3 +99,31 @@ class AnomalyRun(Base):
     contamination: Mapped[float] = mapped_column(Float)
     iqr_bounds: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class Upload(Base):
+    """One imported file and what it changed."""
+
+    __tablename__ = "uploads"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    filename: Mapped[str] = mapped_column(String(255))
+    added: Mapped[int] = mapped_column(Integer, default=0)
+    updated: Mapped[int] = mapped_column(Integer, default=0)
+    skipped: Mapped[int] = mapped_column(Integer, default=0)
+    file_report: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class RecordChange(Base):
+    """Audit trail for every create / update / delete of a daily record."""
+
+    __tablename__ = "record_changes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    date: Mapped[date] = mapped_column(Date, index=True)
+    action: Mapped[str] = mapped_column(String(16))  # create | update | delete
+    source: Mapped[str] = mapped_column(String(255))  # "upload: <filename>" | "manual"
+    old_values: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    new_values: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
