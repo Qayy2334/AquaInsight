@@ -40,7 +40,15 @@ The synthetic generator (`SEED_DEMO_DATA=true`) is only used if the seed file is
 Notes on the real data: NaOCl dosage is recorded in **mg/千吨水 (mg/kt)**; one value `7,58` (outlet pH, 2026-08-07)
 is auto-corrected to 7.58 and listed in the quality report.
 
-Reset everything (including the database):
+### Accounts
+
+Every page and data endpoint requires sign-in. Open the web app, choose **Sign Up**, and create an account with a
+username (3–32 letters, numbers, `.`, `-`, `_`) and a password (at least 6 characters); you are signed in straight
+away. There is no e-mail verification and anyone who can reach the app can register. Passwords are stored as bcrypt
+hashes; sessions use a signed token valid for 12 hours. Set `JWT_SECRET` (see `.env.example`) for any shared
+deployment.
+
+Reset everything (including the database and accounts):
 
 ```bash
 docker compose down -v

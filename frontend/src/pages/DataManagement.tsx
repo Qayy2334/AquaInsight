@@ -3,6 +3,7 @@ import { CalendarPlus, CheckCircle2, Download, FileSpreadsheet, History, Pencil,
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   api,
+  downloadFile,
   EXPORTS,
   fetchers,
   type DayValues,
@@ -343,16 +344,16 @@ export default function DataManagement() {
           <Card>
             <CardHeader title="Export (CSV)" subtitle="For the report appendix" icon={<Download className="size-4" />} />
             <div className="grid grid-cols-2 gap-2">
-              {[
+              {([
                 ['Records', EXPORTS.records],
                 ['Evaluation', EXPORTS.evaluation],
                 ['Predictions', EXPORTS.predictions],
                 ['Anomalies', EXPORTS.anomalies],
-              ].map(([label, href]) => (
-                <a key={href} href={href}
+              ] as const).map(([label, exp]) => (
+                <button key={exp.path} onClick={() => downloadFile(exp.path, exp.file)}
                   className="inline-flex items-center gap-2 rounded-xl border border-grey-100 bg-white px-3 py-2 text-sm hover:bg-grey-25">
                   <Download className="size-4 text-primary-300" /> {label}
-                </a>
+                </button>
               ))}
             </div>
           </Card>

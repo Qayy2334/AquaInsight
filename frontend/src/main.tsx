@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import './index.css'
 import Anomalies from './pages/Anomalies'
+import { Login, Register, RequireAuth } from './pages/Auth'
 import DataManagement from './pages/DataManagement'
 import Evaluation from './pages/Evaluation'
 import ModelTesting from './pages/ModelTesting'
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route element={<RequireAuth><Layout /></RequireAuth>}>
             <Route index element={<Overview />} />
             <Route path="trends" element={<Trends />} />
             <Route path="prediction" element={<Prediction />} />

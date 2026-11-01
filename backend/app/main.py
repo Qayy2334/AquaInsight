@@ -2,12 +2,13 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, SessionLocal, engine, wait_for_db
-from .routers import analysis, anomalies, dashboard, exports, predictions, records as records_router
+from .routers import analysis, auth, anomalies, dashboard, exports, predictions, records as records_router
+from .routers.auth import require_user
 from .services import records
 from .services.demo import generate_demo_data
 from .services.preprocess import build_quality_report, clean, read_upload
@@ -50,8 +51,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Everything except sign-in and health needs a signed-in user.
+app.include_router(auth.router)
 for r in (records_router.router, analysis.router, predictions.router, anomalies.router, exports.router, dashboard.router):
-    app.include_router(r)
+    app.include_router(r, dependencies=[Depends(require_user)])
 
 
 @app.get("/api/health")
