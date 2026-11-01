@@ -9,10 +9,10 @@ function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-full bg-white p-4">
       <aside className="relative hidden w-1/2 max-w-[720px] overflow-hidden rounded-3xl bg-gradient-to-br from-[#0f3d91] via-primary-300 to-[#5fb7f0] p-10 text-white lg:flex lg:flex-col">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <Droplets className="size-7" />
           <span className="text-xl font-semibold">AquaInsight</span>
-        </div>
+        </Link>
         <div className="my-auto max-w-md">
           <h2 className="text-[32px] font-medium leading-tight">Groundwater quality, understood day by day.</h2>
           <p className="mt-4 text-white/80">
@@ -33,16 +33,16 @@ function AuthLayout({ children }: { children: ReactNode }) {
             })}
           </div>
         </div>
-        <p className="text-xs text-white/60">Analytical support tool. Results do not replace laboratory testing or professional judgement.</p>
+        <p className="text-xs text-white/60">© 2026 AquaInsight</p>
         <div className="pointer-events-none absolute -bottom-24 -right-24 size-80 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -right-10 top-24 size-40 rounded-full bg-white/5" />
       </aside>
       <main className="flex flex-1 items-center justify-center px-6">
         <div className="w-full max-w-[350px]">
-          <div className="mb-8 flex items-center gap-2 lg:hidden">
+          <Link to="/" className="mb-8 flex items-center gap-2 lg:hidden">
             <Droplets className="size-6 text-primary-300" />
             <span className="text-lg font-semibold">AquaInsight</span>
-          </div>
+          </Link>
           {children}
         </div>
       </main>
@@ -109,10 +109,10 @@ export function Login() {
     mutationFn: () => api.post<AuthResponse>('/auth/login', { username, password }).then((r) => r.data),
     onSuccess: ({ token, user }) => {
       session.save(token, user)
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     },
   })
-  if (session.token()) return <Navigate to="/" replace />
+  if (session.token()) return <Navigate to="/dashboard" replace />
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -160,10 +160,10 @@ export function Register() {
       api.post<AuthResponse>('/auth/register', { username, password, display_name: displayName || null }).then((r) => r.data),
     onSuccess: ({ token, user }) => {
       session.save(token, user)
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     },
   })
-  if (session.token()) return <Navigate to="/" replace />
+  if (session.token()) return <Navigate to="/dashboard" replace />
 
   const submit = (e: FormEvent) => {
     e.preventDefault()

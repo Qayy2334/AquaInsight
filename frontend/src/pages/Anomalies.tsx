@@ -191,7 +191,7 @@ export default function Anomalies() {
                       className="inline-flex items-center gap-1 rounded-md border border-primary-100/50 bg-primary-0 px-2 py-0.5 text-xs text-primary-300">
                       <ArrowUpRight className="size-3" /> View
                     </button>{' '}
-                    <Link to={`/?date=${item.date}`} title="Open in Daily Record Review"
+                    <Link to={`/dashboard?date=${item.date}`} title="Open in Daily Record Review"
                       className="inline-flex items-center gap-1 rounded-md border border-grey-100 bg-white px-2 py-0.5 text-xs text-grey-500 hover:text-ink">
                       <CalendarDays className="size-3" /> Day
                     </Link>
@@ -250,7 +250,7 @@ function DetailModal({ item, onClose }: { item: AnomalyItem; onClose: () => void
           <p className="text-xs text-grey-500">
             This is a statistical signal for further review, not a verified water quality problem.
           </p>
-          <Link to={`/?date=${item.date}`} className="inline-flex shrink-0 items-center gap-1 text-xs text-primary-300">
+          <Link to={`/dashboard?date=${item.date}`} className="inline-flex shrink-0 items-center gap-1 text-xs text-primary-300">
             <CalendarDays className="size-3" /> Open day view
           </Link>
         </div>

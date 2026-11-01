@@ -92,4 +92,8 @@ and fill in the result.
 | UI-24 | Header | Click sign-out, then sign in again | Back to Sign In with session cleared; signing in returns to Dashboard | Pass |
 | UI-25 | Session | Invalid or expired token | Next data request redirects to Sign In | Pass |
 | UI-26 | Data Management | Click an export button while signed in | CSV downloads (request carries the token) | To run (authorised request verified) |
+| UI-27 | Landing | Open `/` at 1440×900 | Public landing page; hero exactly one viewport tall; nav with section links and Sign in; feature card carousel auto-advances and responds to arrows; no horizontal overflow | Pass |
+| UI-28 | Landing | Scroll through Problem, How it works, Product, Impact and the closing call to action | Sections rise in once as they enter the viewport; footer links jump to sections | Pass |
+| UI-29 | Landing | Open `/` at 390×844 | Menu button opens a drawer with section links and Sign in; hero copy stacked; feature card full width with arrows above | Pass |
+| UI-30 | Routing | Open `/dashboard` signed out; open an unknown path | Redirected to Sign In; unknown path returns to the landing page; signing in lands on `/dashboard` | Pass |
 | UI-19 | Deployment | `docker compose down -v && docker compose up -d --build` on a clean machine | All three containers start; real dataset imported automatically | Pass |

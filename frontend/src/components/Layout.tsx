@@ -21,7 +21,7 @@ const NAV = [
   {
     section: 'Overview',
     items: [
-      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { to: '/trends', label: 'Historical Trends', icon: LineChart },
     ],
   },
@@ -85,7 +85,7 @@ export default function Layout() {
                   <NavLink
                     key={to}
                     to={to}
-                    end={to === '/'}
+                    end
                     title={label}
                     className={({ isActive }) =>
                       clsx(

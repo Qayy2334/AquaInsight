@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import Landing from './pages/Landing'
 import './index.css'
 import Anomalies from './pages/Anomalies'
 import { Login, Register, RequireAuth } from './pages/Auth'
@@ -22,10 +23,11 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          <Route index element={<Landing />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route element={<RequireAuth><Layout /></RequireAuth>}>
-            <Route index element={<Overview />} />
+            <Route path="dashboard" element={<Overview />} />
             <Route path="trends" element={<Trends />} />
             <Route path="prediction" element={<Prediction />} />
             <Route path="testing" element={<ModelTesting />} />
@@ -33,6 +35,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="evaluation" element={<Evaluation />} />
             <Route path="data" element={<DataManagement />} />
           </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
