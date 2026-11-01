@@ -84,18 +84,15 @@ docker compose version
 ```powershell
 mkdir C:\Projects
 cd C:\Projects
-git clone <仓库地址> AquaInsight
+git clone https://github.com/Qayy2334/AquaInsight.git
 cd AquaInsight
 ```
-
-> `<仓库地址>` 替换为项目在 GitHub / GitLab 上的地址，例如
-> `https://github.com/<用户名>/<仓库名>.git`。
 
 以后项目有更新时，在项目文件夹里执行 `git pull` 即可获取最新代码。
 
 ### 方式 B：下载 ZIP 压缩包
 
-- 在 GitHub 仓库页面点击 **Code → Download ZIP**，或直接使用别人发给你的压缩包
+- 打开 <https://github.com/Qayy2334/AquaInsight>，点击 **Code → Download ZIP**，或直接使用别人发给你的压缩包
 - 解压到 `C:\Projects\AquaInsight`
 - 确认解压后的文件夹里能直接看到 `docker-compose.yml` 和 `start-windows.bat`
   （而不是又套了一层文件夹）

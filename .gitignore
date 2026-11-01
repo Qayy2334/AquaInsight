@@ -10,3 +10,5 @@ artifacts/
 *.db
 *.tsbuildinfo
 docker-images/
+.idea/
+.vscode/
