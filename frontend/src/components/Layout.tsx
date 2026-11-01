@@ -15,7 +15,6 @@ import {
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { fetchers, session } from '../api/client'
-import { Badge } from './ui'
 
 const NAV = [
   {
@@ -124,13 +123,6 @@ export default function Layout() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {ds && (
-              <div className="flex items-center gap-2 rounded-xl border border-grey-50 bg-white px-3 py-2 text-sm">
-                <Database className="size-4 text-primary-300" />
-                <span className="max-w-[240px] truncate">{ds.name}</span>
-                {ds.source === 'demo' && <Badge tone="warning">Synthetic</Badge>}
-              </div>
-            )}
             {user && (
               <div className="flex items-center gap-2 rounded-xl border border-grey-50 bg-white py-1.5 pl-1.5 pr-2 text-sm">
                 <span className="flex size-7 items-center justify-center rounded-lg bg-primary-0 text-xs font-semibold uppercase text-primary-300">
