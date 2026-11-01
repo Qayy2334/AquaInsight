@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowUpRight, Play, TriangleAlert, X } from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Play, TriangleAlert, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api, fetchers, type AnomalyItem, type VariableKey } from '../api/client'
 import Chart from '../components/Chart'
 import { Badge, Button, Card, CardHeader, ErrorState, Loading, Notice, Segmented, Select, StatCard, Table } from '../components/ui'
@@ -185,11 +186,15 @@ export default function Anomalies() {
                     {contrib.slice(0, 3).map((c) => `${varLabel(m, c.variable)} (${fmt(c.value)})`).join(', ')}
                   </td>
                   <td>{fmt(item.details.iforest?.score, 3)}</td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <button onClick={() => setSelected(item)}
                       className="inline-flex items-center gap-1 rounded-md border border-primary-100/50 bg-primary-0 px-2 py-0.5 text-xs text-primary-300">
                       <ArrowUpRight className="size-3" /> View
-                    </button>
+                    </button>{' '}
+                    <Link to={`/?date=${item.date}`} title="Open in Daily Record Review"
+                      className="inline-flex items-center gap-1 rounded-md border border-grey-100 bg-white px-2 py-0.5 text-xs text-grey-500 hover:text-ink">
+                      <CalendarDays className="size-3" /> Day
+                    </Link>
                   </td>
                 </tr>
               )
@@ -241,9 +246,14 @@ function DetailModal({ item, onClose }: { item: AnomalyItem; onClose: () => void
             <div className="mt-2 text-xs text-grey-500">Score: {fmt(detail.score, 3)}</div>
           </div>
         )}
-        <p className="mt-4 text-xs text-grey-500">
-          This is a statistical signal for further review, not a verified water quality problem.
-        </p>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="text-xs text-grey-500">
+            This is a statistical signal for further review, not a verified water quality problem.
+          </p>
+          <Link to={`/?date=${item.date}`} className="inline-flex shrink-0 items-center gap-1 text-xs text-primary-300">
+            <CalendarDays className="size-3" /> Open day view
+          </Link>
+        </div>
       </div>
     </div>
   )

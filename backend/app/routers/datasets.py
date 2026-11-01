@@ -38,6 +38,10 @@ async def upload(file: UploadFile = File(...), db: Session = Depends(get_db)):
     ds = save_dataset(db, file.filename, df, report)
     # Run the analysis pipeline right away so every page has results for the new dataset.
     warnings = []
+    if report.get("duplicate_dates"):
+        dd = report["duplicate_dates"]
+        warnings.append(f"{len(dd)} date(s) had more than one row; only the first row was kept: "
+                        + ", ".join(dd[:10]) + (" …" if len(dd) > 10 else ""))
     try:
         ml.train_all(db, ds.id, df)
     except ValueError as e:

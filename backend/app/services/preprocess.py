@@ -99,7 +99,9 @@ def clean(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         df[key] = pd.to_numeric(text, errors="coerce")
         non_numeric[key] = int(before - df[key].notna().sum())
 
-    duplicates = int(df.duplicated(subset=["date"]).sum())
+    dup_mask = df.duplicated(subset=["date"])
+    duplicates = int(dup_mask.sum())
+    duplicate_dates = sorted({d.date().isoformat() for d in df.loc[dup_mask, "date"]})
     df = df.drop_duplicates(subset=["date"], keep="first").sort_values("date").reset_index(drop=True)
 
     report = build_quality_report(df)
@@ -108,6 +110,7 @@ def clean(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             "rows_in": rows_in,
             "invalid_dates_dropped": invalid_dates,
             "duplicate_dates_dropped": duplicates,
+            "duplicate_dates": duplicate_dates,
             "non_numeric_values": non_numeric,
             "corrections": corrections,
             "column_mapping": mapping,

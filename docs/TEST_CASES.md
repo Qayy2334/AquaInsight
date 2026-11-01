@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **23 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **26 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -39,6 +39,9 @@ Tests use an isolated SQLite database and the real seed file. Last run: **23 pas
 | | test_exports | 4 CSV exports return the expected rows |
 | | test_upload_rejects_bad_files | Wrong extension → 400; no date column → 422 |
 | | test_upload_new_dataset_becomes_active_and_delete | Upload becomes active; delete restores previous dataset |
+| | test_dashboard_summary | Summary: 61 rows, top correlation > 0.95, free chlorine within reference 56/61, turbidity −31%, anomaly counts |
+| | test_dashboard_day_view | Day view for 09-16 (low dosage, both flags, prev/next, ±3 days), test-period day has predictions, unknown date → 404, first day has no prev |
+| | test_duplicate_dates_warned_on_upload | Duplicate date in upload is listed in the report and returned as a warning |
 
 ## 2. Functional UI test cases
 
@@ -48,9 +51,13 @@ and fill in the result.
 
 | ID | Page | Steps | Expected result | Result |
 |---|---|---|---|---|
-| UI-01 | Dashboard | Open `/` | KPI cards show last record 2026-09-30: outlet turbidity 0.14, pH 7.59, free chlorine 0.35; header shows dataset period and 61 records | Pass |
-| UI-02 | Dashboard | Change gauge to each target | Gauge value and reference note update; badge shows within/outside reference | To run |
-| UI-03 | Dashboard | Inspect "Model Output on Last Record" | LR and RF values for 2026-10-01 shown with MAE and the historical-analysis disclaimer | Pass |
+| UI-01 | Dashboard | Open `/` | Summary cards: 61 records, 100% quality, predictability 0/3, 3 records to review; findings: turbidity −31.2%, dosage × chlorine r = 0.98, free chlorine within reference 56/61 | Pass |
+| UI-02 | Dashboard | Open `/` without a date | Daily review defaults to the last record (2026-09-30), not today's date | Pass |
+| UI-03 | Dashboard | Open `/?date=2026-09-16` | Calendar highlights 16 Sep; dosage 1.00 and free chlorine 0.05 marked Low; IQR and Isolation Forest reasons shown; ±3-day chart with IQR bounds | Pass |
+| UI-03b | Dashboard | Open `/?date=2026-09-27` (test period) | "Model check for this day" table shows actual vs LR, RF and historical mean | Pass |
+| UI-03c | Dashboard | Click Next / Prev | Moves to the adjacent record date and updates the URL | Pass (Next) |
+| UI-03d | Dashboard | Click a flagged date in the calendar | Day view switches to that date | To run |
+| UI-03e | Anomaly Detection | Click "Day" on a flagged row | Opens Dashboard daily review for that date | Pass |
 | UI-04 | Historical Trends | Select variable, switch 1W/2W/1M/All | Line chart and 7-day average update to the selected range | Pass (All) / To run (others) |
 | UI-05 | Historical Trends | Switch Influent vs Outlet between Turbidity and pH | Weekly bars for the selected pair | Pass |
 | UI-06 | Historical Trends | Toggle Distribution: Histogram / Box plot | Box plot shows quartiles; IQR outliers drawn as points | Pass |

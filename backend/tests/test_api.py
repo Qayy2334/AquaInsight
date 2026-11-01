@@ -81,3 +81,36 @@ def test_value_on_iqr_bound_not_flagged_for_that_variable(client):
     # 2026-09-07 dosage 5.0 equals the upper bound (Q3 4.1 + 1.5 * IQR 0.6); only free chlorine 0.45 exceeds its bound.
     item = {i["date"]: i for i in client.get("/api/anomalies").json()["items"]}["2026-09-07"]
     assert [c["variable"] for c in item["details"]["iqr"]["contributors"]] == ["outlet_free_chlorine"]
+
+
+def test_dashboard_summary(client):
+    s = client.get("/api/dashboard/summary").json()
+    assert s["dataset"]["rows"] == 61
+    assert s["top_correlations"][0]["r"] > 0.95
+    assert {c["variable"]: c["within"] for c in s["compliance"]}["outlet_free_chlorine"] == 56
+    assert round(s["treatment"]["turbidity"]["change_pct"]) == -31
+    assert len(s["predictability"]) == 3
+    assert s["anomalies"]["both"] == 3 and s["anomalies"]["iqr"] == 13
+
+
+def test_dashboard_day_view(client):
+    d = client.get("/api/dashboard/day", params={"date": "2026-09-16"}).json()
+    assert d["variables"]["naocl_dosage"]["value"] == 1.0 and d["variables"]["naocl_dosage"]["status"] == "low"
+    assert set(d["anomaly"]) == {"iqr", "iforest"}
+    assert d["prev_date"] == "2026-09-15" and d["next_date"] == "2026-09-17"
+    assert len(d["neighbours"]) == 7 and d["predictions"] == {}
+    test_day = client.get("/api/dashboard/day", params={"date": "2026-09-27"}).json()
+    assert set(test_day["predictions"]) == {"outlet_turbidity", "outlet_ph", "outlet_free_chlorine"}
+    assert client.get("/api/dashboard/day", params={"date": "2026-10-05"}).status_code == 404
+    edge = client.get("/api/dashboard/day", params={"date": "2026-08-01"}).json()
+    assert edge["prev_date"] is None and len(edge["neighbours"]) == 4
+
+
+def test_duplicate_dates_warned_on_upload(client):
+    csv = ("Date,Influent Turbidity,Influent pH,NaOCl Dosage,Outlet Turbidity,Outlet pH,Outlet Free Chlorine\n"
+           + "".join(f"2026-11-{d:02d},0.2,7.5,3.5,0.1{d % 5},7.55,0.3{d % 3}\n" for d in range(1, 31))
+           + "2026-11-05,9,9,9,9,9,9\n")
+    up = client.post("/api/datasets/upload", files={"file": ("dup.csv", csv.encode())}).json()
+    assert up["quality_report"]["duplicate_dates"] == ["2026-11-05"]
+    assert any("2026-11-05" in w for w in up["warnings"])
+    client.delete(f"/api/datasets/{up['id']}")
