@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import {
   BrainCircuit,
@@ -8,12 +8,13 @@ import {
   FlaskConical,
   LayoutDashboard,
   LineChart,
+  LogOut,
   PanelLeft,
   TriangleAlert,
 } from 'lucide-react'
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { fetchers } from '../api/client'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { fetchers, session } from '../api/client'
 import { Badge } from './ui'
 
 const NAV = [
@@ -48,6 +49,14 @@ export default function Layout() {
   const { pathname } = useLocation()
   const overview = useQuery({ queryKey: ['overview'], queryFn: fetchers.overview, retry: false })
   const ds = overview.data?.dataset
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const user = session.user()
+  const signOut = () => {
+    session.clear()
+    queryClient.clear()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="flex h-full">
@@ -114,13 +123,26 @@ export default function Layout() {
                 : 'Groundwater Quality Prediction & Anomaly Detection'}
             </p>
           </div>
-          {ds && (
-            <div className="flex items-center gap-2 rounded-xl border border-grey-50 bg-white px-3 py-2 text-sm">
-              <Database className="size-4 text-primary-300" />
-              <span className="max-w-[240px] truncate">{ds.name}</span>
-              {ds.source === 'demo' && <Badge tone="warning">Synthetic</Badge>}
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {ds && (
+              <div className="flex items-center gap-2 rounded-xl border border-grey-50 bg-white px-3 py-2 text-sm">
+                <Database className="size-4 text-primary-300" />
+                <span className="max-w-[240px] truncate">{ds.name}</span>
+                {ds.source === 'demo' && <Badge tone="warning">Synthetic</Badge>}
+              </div>
+            )}
+            {user && (
+              <div className="flex items-center gap-2 rounded-xl border border-grey-50 bg-white py-1.5 pl-1.5 pr-2 text-sm">
+                <span className="flex size-7 items-center justify-center rounded-lg bg-primary-0 text-xs font-semibold uppercase text-primary-300">
+                  {user.display_name.slice(0, 1)}
+                </span>
+                <span className="max-w-[140px] truncate">{user.display_name}</span>
+                <button onClick={signOut} title="Sign out" className="ml-1 rounded-lg p-1 text-grey-500 hover:bg-grey-25 hover:text-ink">
+                  <LogOut className="size-4" />
+                </button>
+              </div>
+            )}
+          </div>
         </header>
         <main className="min-h-0 flex-1 overflow-auto px-6 pb-6">
           <div className="rounded-3xl bg-white/60 p-0">

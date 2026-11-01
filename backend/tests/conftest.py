@@ -24,4 +24,14 @@ def client():
     from app.main import app
 
     with TestClient(app) as c:
+        token = c.post("/api/auth/register", json={"username": "tester", "password": "secret123"}).json()["token"]
+        c.headers.update({"Authorization": f"Bearer {token}"})
         yield c
+
+
+@pytest.fixture(scope="session")
+def anon(client):
+    """A client without credentials, sharing the same app and database."""
+    from app.main import app
+
+    return TestClient(app)

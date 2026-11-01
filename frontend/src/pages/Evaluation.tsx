@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Download, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { api, EXPORTS, fetchers, type AnyModel, type TargetKey, type VariableKey } from '../api/client'
+import { api, downloadFile, EXPORTS, fetchers, type AnyModel, type TargetKey, type VariableKey } from '../api/client'
 import Chart from '../components/Chart'
 import { Badge, Button, Card, CardHeader, ErrorState, Loading, Notice, Segmented, Table } from '../components/ui'
 import { CHART_COLORS, fmt, isReference, MODEL_LABEL, varLabel, varUnit } from '../lib/format'
@@ -54,9 +54,9 @@ export default function Evaluation() {
         <Button variant="outline" onClick={() => retrain.mutate()} disabled={retrain.isPending} icon={<RefreshCw className={`size-4 ${retrain.isPending ? 'animate-spin' : ''}`} />}>
           {retrain.isPending ? 'Training…' : 'Retrain models'}
         </Button>
-        <a href={EXPORTS.evaluation}>
-          <Button icon={<Download className="size-4" />}>Export CSV</Button>
-        </a>
+        <Button onClick={() => downloadFile(EXPORTS.evaluation.path, EXPORTS.evaluation.file)} icon={<Download className="size-4" />}>
+          Export CSV
+        </Button>
       </div>
 
       <Card>

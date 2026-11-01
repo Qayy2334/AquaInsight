@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     seed_demo_data: bool = False
     cors_origins: str = "http://localhost:5173,http://localhost:8080"
 
+    # Sign-in tokens. Set JWT_SECRET in the environment for any shared deployment.
+    jwt_secret: str = "dev-only-change-me"
+    token_hours: int = 12
+
     test_ratio: float = 0.2
     iqr_k: float = 1.5
     iforest_contamination: float = 0.05

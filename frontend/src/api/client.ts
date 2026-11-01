@@ -2,6 +2,57 @@ import axios from 'axios'
 
 export const api = axios.create({ baseURL: '/api' })
 
+const TOKEN_KEY = 'aquainsight_token'
+const USER_KEY = 'aquainsight_user'
+
+export interface User {
+  id: number
+  username: string
+  display_name: string
+}
+
+export const session = {
+  token: () => localStorage.getItem(TOKEN_KEY),
+  user: (): User | null => {
+    const raw = localStorage.getItem(USER_KEY)
+    return raw ? (JSON.parse(raw) as User) : null
+  },
+  save: (token: string, user: User) => {
+    localStorage.setItem(TOKEN_KEY, token)
+    localStorage.setItem(USER_KEY, JSON.stringify(user))
+  },
+  clear: () => {
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(USER_KEY)
+  },
+}
+
+api.interceptors.request.use((config) => {
+  const token = session.token()
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+// An expired or invalid token on any data request sends the user back to sign in.
+api.interceptors.response.use(undefined, (error) => {
+  const url: string = error.config?.url ?? ''
+  if (error.response?.status === 401 && !url.startsWith('/auth/')) {
+    session.clear()
+    if (!location.pathname.startsWith('/login')) location.assign('/login')
+  }
+  return Promise.reject(error)
+})
+
+/** Download a CSV through the authenticated API (plain links cannot send the token). */
+export async function downloadFile(path: string, filename: string) {
+  const res = await api.get(path.replace(/^\/api/, ''), { responseType: 'blob' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(res.data)
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 export type VariableKey =
   | 'influent_turbidity'
   | 'influent_ph'
@@ -228,8 +279,8 @@ export const fetchers = {
 }
 
 export const EXPORTS = {
-  records: '/api/export/records.csv',
-  evaluation: '/api/export/evaluation.csv',
-  predictions: '/api/export/predictions.csv',
-  anomalies: '/api/export/anomalies.csv',
+  records: { path: '/export/records.csv', file: 'cleaned_records.csv' },
+  evaluation: { path: '/export/evaluation.csv', file: 'model_evaluation.csv' },
+  predictions: { path: '/export/predictions.csv', file: 'test_predictions.csv' },
+  anomalies: { path: '/export/anomalies.csv', file: 'anomalies.csv' },
 }

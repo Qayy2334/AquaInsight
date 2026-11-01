@@ -12,7 +12,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Tests use an isolated SQLite database and the real seed file. Last run: **29 passed**.
+Tests use an isolated SQLite database and the real seed file. Last run: **34 passed**.
 
 | File | Test | What it checks |
 |---|---|---|
@@ -28,6 +28,11 @@ Tests use an isolated SQLite database and the real seed file. Last run: **29 pas
 | | test_gaps_do_not_create_pairs | A missing day does not create a false t → t+1 pair |
 | | test_persistence_and_mean_references | Reference predictions are computed correctly |
 | | test_time_series_cv_is_expanding_and_ordered | CV folds are chronological with growing training sets |
+| test_auth.py | test_protected_endpoints_require_sign_in | Data endpoints return 401 without a valid token; health stays public |
+| | test_register_login_and_me | Register, sign in, /me and an authorised data request |
+| | test_register_validation | Duplicate username 409; short username, short password, invalid characters 422 |
+| | test_wrong_credentials_rejected | Wrong password and unknown user both 401 |
+| | test_password_not_stored_in_plain_text | Stored value is a bcrypt hash |
 | test_api.py | test_seeded_from_plant_log | Empty DB is seeded with the 61-day plant log; import logged |
 | | test_records_match_source_and_carry_origin | API returns source values and each day's origin |
 | | test_chronological_split_without_overlap | 48/12 split; test period 09-19 – 09-30 |
@@ -80,4 +85,11 @@ and fill in the result.
 | UI-17b | Data Management | Click "Add" on the missing row, fill values, save | Day restored as Manual; history shows delete then create | Pass |
 | UI-17c | Data Management | Edit a day | Value updated, source becomes Manual | Pass |
 | UI-18 | Data Management | Click each export button | 4 CSV files download and open in Excel with correct characters | To run |
+| UI-20 | Sign in | Open any page while signed out | Redirected to Sign In (split layout from Figma, brand panel on the left) | Pass |
+| UI-21 | Sign in | Unknown username or wrong password | Red message under the password field: "Incorrect username or password." | Pass |
+| UI-22 | Sign up | Submit with short username, short password and mismatched confirmation | Three field errors shown; nothing submitted | Pass |
+| UI-23 | Sign up | Valid username and matching passwords | Account created, signed in, Dashboard shown with name in the header | Pass |
+| UI-24 | Header | Click sign-out, then sign in again | Back to Sign In with session cleared; signing in returns to Dashboard | Pass |
+| UI-25 | Session | Invalid or expired token | Next data request redirects to Sign In | Pass |
+| UI-26 | Data Management | Click an export button while signed in | CSV downloads (request carries the token) | To run (authorised request verified) |
 | UI-19 | Deployment | `docker compose down -v && docker compose up -d --build` on a clean machine | All three containers start; real dataset imported automatically | Pass |
