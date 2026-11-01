@@ -54,6 +54,13 @@ Reset everything (including the database and accounts):
 docker compose down -v
 ```
 
+### Windows
+
+Double-click `start-windows.bat` (needs Docker Desktop). It loads the offline images in `docker-images/` if
+present, starts the stack, waits until it is ready and opens the browser. `stop-windows.bat` stops it;
+`reset-windows.bat` wipes all data. Build the offline x86-64 images with `./scripts/build-windows-images.sh`.
+Full guide (Chinese): [docs/WINDOWS.md](docs/WINDOWS.md).
+
 ## Local development
 
 ```bash

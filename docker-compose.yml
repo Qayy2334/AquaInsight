@@ -20,6 +20,8 @@ services:
       retries: 20
 
   backend:
+    # Named so prebuilt images (docker-images/*.tar) are used without rebuilding.
+    image: aquainsight-backend:latest
     build: ./backend
     restart: unless-stopped
     environment:
@@ -36,6 +38,7 @@ services:
         condition: service_healthy
 
   frontend:
+    image: aquainsight-frontend:latest
     build: ./frontend
     restart: unless-stopped
     ports:
