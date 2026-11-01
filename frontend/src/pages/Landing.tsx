@@ -43,15 +43,10 @@ const INSIGHTS = [
   },
 ]
 
-const RAIL = [
-  'SDG 6 · Clean Water and Sanitation',
-  'SDG 3 · Good Health and Well-being',
-  'SDG 9 · Industry, Innovation and Infrastructure',
-  'Python',
-  'scikit-learn',
-  'FastAPI',
-  'React',
-  'MySQL',
+const SDGS = [
+  ['SDG 6', 'Clean Water and Sanitation'],
+  ['SDG 3', 'Good Health and Well-being'],
+  ['SDG 9', 'Industry, Innovation and Infrastructure'],
 ]
 
 /** Adds .is-visible to .lp-reveal children of the returned ref once they scroll into view. */
@@ -256,14 +251,12 @@ function Hero() {
 
           <div className="lp-enter border-t border-[#000e23]/10 px-6 pb-6 pt-5" style={delay(1200)}>
             <p className="text-center text-[13px] font-medium uppercase tracking-[-0.01em] text-[#4a4a4a]">Built around the UN Sustainable Development Goals</p>
-            <div className="relative mx-auto mt-4 max-w-[620px] overflow-hidden">
-              <div className="lp-marquee flex w-max gap-10 whitespace-nowrap">
-                {[...RAIL, ...RAIL].map((r, i) => (
-                  <span key={i} className="text-sm font-semibold tracking-tight text-[#9aa1ad]">{r}</span>
-                ))}
-              </div>
-              <span className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-white/0" />
-              <span className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-white/0" />
+            <div className="mx-auto mt-4 flex max-w-[680px] flex-wrap items-center justify-center gap-x-8 gap-y-2">
+              {SDGS.map(([code, name]) => (
+                <span key={code} className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-[#9aa1ad]">
+                  <span className="text-[#4a4a4a]">{code}</span> {name}
+                </span>
+              ))}
             </div>
           </div>
         </section>
