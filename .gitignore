@@ -9,3 +9,4 @@ artifacts/
 .pytest_cache/
 *.db
 *.tsbuildinfo
+docker-images/

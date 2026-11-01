@@ -1,0 +1,10 @@
+# Keep Linux-side files LF even when the repo is checked out on Windows (core.autocrlf),
+# and Windows batch files CRLF so cmd.exe parses them correctly.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.docx binary
+*.xlsx binary
+*.png binary
+*.svg text
+*.tar binary
