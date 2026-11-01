@@ -20,7 +20,7 @@ cp .env.example .env   # optional, defaults work
 docker compose up -d --build
 ```
 
-- Web: http://localhost:8080
+- Web: http://localhost:8080 (public landing page; the app lives behind sign-in at `/dashboard`)
 - API docs (Swagger): http://localhost:8000/docs
 - MySQL: `localhost:3307` (user `water` / `water`, db `water_quality`)
 
